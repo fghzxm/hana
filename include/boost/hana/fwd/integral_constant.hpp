@@ -14,6 +14,7 @@ Distributed under the Boost Software License, Version 1.0.
 #include <boost/hana/detail/integral_constant.hpp>
 
 #include <cstddef>
+#include <cstdint>
 
 
 BOOST_HANA_NAMESPACE_BEGIN
@@ -39,115 +40,119 @@ BOOST_HANA_NAMESPACE_BEGIN
     BOOST_HANA_INLINE_VARIABLE constexpr integral_constant<T, v> integral_c{};
 
 
-    //! @relates hana::integral_constant
-    template <bool b>
-    using bool_ = integral_constant<bool, b>;
+#define BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(val_ty, param, ty, var) \
+    //! @relates hana::integral_constant                               \
+    template <val_ty param>                                            \
+    using ty = integral_constant<val_ty, param>;                       \
+                                                                       \
+    //! @relates hana::integral_constant                               \
+    template <val_ty param>                                            \
+    BOOST_HANA_INLINE_VARIABLE constexpr ty<param> var{};              \
+    /**/
 
-    //! @relates hana::integral_constant
-    template <bool b>
-    BOOST_HANA_INLINE_VARIABLE constexpr bool_<b> bool_c{};
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(               bool, b,          bool_,         bool_c)
 
     //! @relates hana::integral_constant
     using true_ = bool_<true>;
 
     //! @relates hana::integral_constant
-    BOOST_HANA_INLINE_VARIABLE constexpr auto true_c = bool_c<true>;
+    BOOST_HANA_INLINE_VARIABLE constexpr true_ true_c{};
 
     //! @relates hana::integral_constant
     using false_ = bool_<false>;
 
     //! @relates hana::integral_constant
-    BOOST_HANA_INLINE_VARIABLE constexpr auto false_c = bool_c<false>;
+    BOOST_HANA_INLINE_VARIABLE constexpr false_ false_c{};
 
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(               char, c,          char_,         char_c)
+#ifndef BOOST_HANA_LEAN_AND_MEAN
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(   signed      char, i,          schar,        schar_c)
+#endif
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( unsigned      char, i,          uchar,        uchar_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(              short, i,         short_,        short_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( unsigned     short, i,        ushort_,       ushort_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(                int, i,           int_,          int_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( unsigned       int, i,           uint,         uint_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(               long, i,          long_,         long_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( unsigned      long, i,          ulong,        ulong_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(          long long, i,          llong,        llong_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( unsigned long long, i,         ullong,       ullong_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(        std::size_t, i,         size_t,         size_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(     std::ptrdiff_t, i,      ptrdiff_t,      ptrdiff_c)
 
-    //! @relates hana::integral_constant
-    template <char c>
-    using char_ = integral_constant<char, c>;
+    // stackoverflow.com/a/59553656
+#   if !defined(BOOST_HANA_SILENCE_FIXED_WIDTH_INTEGER_ABSENCE_WARNING)
+#       if !defined(   INT8_MAX) || \
+           !defined(  UINT8_MAX) || \
+           !defined(  INT16_MAX) || \
+           !defined( UINT16_MAX) || \
+           !defined(  INT32_MAX) || \
+           !defined( UINT32_MAX) || \
+           !defined(  INT64_MAX) || \
+           !defined( UINT64_MAX) || \
+           !defined( INTPTR_MAX) || \
+           !defined(UINTPTR_MAX)
+#           warning The compiler you are using does not support one or more of the common        \
+                    fixed-width integer types (int8_t etc.). Corresponding names 'hana::*_t' and \
+                    'hana::*_c' will not be defined. To silence this warning, define the macro   \
+                    BOOST_HANA_SILENCE_FIXED_WIDTH_INTEGER_ABSENCE_WARNING before including any  \
+                    Boost.Hana header files.
+#       endif
+#   endif
 
-    //! @relates hana::integral_constant
-    template <char c>
-    BOOST_HANA_INLINE_VARIABLE constexpr char_<c> char_c{};
+#   ifdef    INT8_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(        std::int8_t, i,         int8_t,         int8_c)
+#   endif
+#   ifdef   UINT8_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(       std::uint8_t, i,        uint8_t,        uint8_c)
+#   endif
+#   ifdef   INT16_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(       std::int16_t, i,        int16_t,        int16_c)
+#   endif
+#   ifdef  UINT16_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(      std::uint16_t, i,       uint16_t,       uint16_c)
+#   endif
+#   ifdef   INT32_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(       std::int32_t, i,        int32_t,        int32_c)
+#   endif
+#   ifdef  UINT32_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(      std::uint32_t, i,       uint32_t,       uint32_c)
+#   endif
+#   ifdef   INT64_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(       std::int64_t, i,        int64_t,        int64_c)
+#   endif
+#   ifdef  UINT64_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(      std::uint64_t, i,       uint64_t,       uint64_c)
+#   endif
+#   ifdef  INTPTR_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(      std::intptr_t, i,       intptr_t,       intptr_c)
+#   endif
+#   ifdef UINTPTR_MAX
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(     std::uintptr_t, i,      uintptr_t,      uintptr_c)
+#   endif
 
+#   ifndef BOOST_HANA_LEAN_AND_MEAN
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(      std::intmax_t, i,       intmax_t,       intmax_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(     std::uintmax_t, i,      uintmax_t,      uintmax_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(   std::int_fast8_t, i,    int_fast8_t,    int_fast8_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(  std::uint_fast8_t, i,   uint_fast8_t,   uint_fast8_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(  std::int_fast16_t, i,   int_fast16_t,   int_fast16_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::uint_fast16_t, i,  uint_fast16_t,  uint_fast16_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(  std::int_fast32_t, i,   int_fast32_t,   int_fast32_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::uint_fast32_t, i,  uint_fast32_t,  uint_fast32_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(  std::int_fast64_t, i,   int_fast64_t,   int_fast64_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::uint_fast64_t, i,  uint_fast64_t,  uint_fast64_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(  std::int_least8_t, i,   int_least8_t,   int_least8_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::uint_least8_t, i,  uint_least8_t,  uint_least8_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::int_least16_t, i,  int_least16_t,  int_least16_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(std::uint_least16_t, i, uint_least16_t, uint_least16_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::int_least32_t, i,  int_least32_t,  int_least32_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(std::uint_least32_t, i, uint_least32_t, uint_least32_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND( std::int_least64_t, i,  int_least64_t,  int_least64_c)
+    BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND(std::uint_least64_t, i, uint_least64_t, uint_least64_c)
+#   endif
 
-    //! @relates hana::integral_constant
-    template <short i>
-    using short_ = integral_constant<short, i>;
-
-    //! @relates hana::integral_constant
-    template <short i>
-    BOOST_HANA_INLINE_VARIABLE constexpr short_<i> short_c{};
-
-
-    //! @relates hana::integral_constant
-    template <unsigned short i>
-    using ushort_ = integral_constant<unsigned short, i>;
-
-    //! @relates hana::integral_constant
-    template <unsigned short i>
-    BOOST_HANA_INLINE_VARIABLE constexpr ushort_<i> ushort_c{};
-
-
-    //! @relates hana::integral_constant
-    template <int i>
-    using int_ = integral_constant<int, i>;
-
-    //! @relates hana::integral_constant
-    template <int i>
-    BOOST_HANA_INLINE_VARIABLE constexpr int_<i> int_c{};
-
-
-    //! @relates hana::integral_constant
-    template <unsigned int i>
-    using uint = integral_constant<unsigned int, i>;
-
-    //! @relates hana::integral_constant
-    template <unsigned int i>
-    BOOST_HANA_INLINE_VARIABLE constexpr uint<i> uint_c{};
-
-
-    //! @relates hana::integral_constant
-    template <long i>
-    using long_ = integral_constant<long, i>;
-
-    //! @relates hana::integral_constant
-    template <long i>
-    BOOST_HANA_INLINE_VARIABLE constexpr long_<i> long_c{};
-
-
-    //! @relates hana::integral_constant
-    template <unsigned long i>
-    using ulong = integral_constant<unsigned long, i>;
-
-    //! @relates hana::integral_constant
-    template <unsigned long i>
-    BOOST_HANA_INLINE_VARIABLE constexpr ulong<i> ulong_c{};
-
-
-    //! @relates hana::integral_constant
-    template <long long i>
-    using llong = integral_constant<long long, i>;
-
-    //! @relates hana::integral_constant
-    template <long long i>
-    BOOST_HANA_INLINE_VARIABLE constexpr llong<i> llong_c{};
-
-
-    //! @relates hana::integral_constant
-    template <unsigned long long i>
-    using ullong = integral_constant<unsigned long long, i>;
-
-    //! @relates hana::integral_constant
-    template <unsigned long long i>
-    BOOST_HANA_INLINE_VARIABLE constexpr ullong<i> ullong_c{};
-
-
-    //! @relates hana::integral_constant
-    template <std::size_t i>
-    using size_t = integral_constant<std::size_t, i>;
-
-    //! @relates hana::integral_constant
-    template <std::size_t i>
-    BOOST_HANA_INLINE_VARIABLE constexpr size_t<i> size_c{};
+#undef BOOST_HANA_INTEGRAL_CONSTANT_SHORTHAND
 
 
     namespace literals {
